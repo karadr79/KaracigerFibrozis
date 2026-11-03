@@ -452,6 +452,7 @@ $('example').addEventListener('click',example);
 example();
 })();
 </script>
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
+<script>if('serviceWorker' in navigator){let r=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(r)return;r=true;location.reload()});
+window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(g=>g.update()).catch(()=>{})})}</script>
 </body>
 </html>
