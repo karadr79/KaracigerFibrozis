@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7a2e3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fibrozis">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Hepatik Steatoz ve Fibrozis Skorları</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Klinik laboratuvar raporu: solda veri girişi, sağda eşik cetvelleriyle yorumlanmış skorlar */
+:root{
+  --paper:#f5f4f2; --surface:#ffffff; --ink:#1c2230; --mute:#5d6472; --rule:#e2e0dc;
+  --accent:#7a2e3b; --accent-soft:#f4e9eb; --field:#faf9f7;
+  --ok:#24704a; --ok-bg:#e3f1e8; --mid:#99620a; --mid-bg:#fbf0d9; --hi:#b3261e; --hi-bg:#fbe5e3; --na:#6a7080; --na-bg:#eceef1;
+  --z-ok:#9fd3b4; --z-mid:#f2cf85; --z-hi:#ee9d96; --z-na:#d5d8de;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 2px rgba(28,34,48,.05),0 4px 14px rgba(28,34,48,.05);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#12151b; --surface:#1a1e26; --ink:#e8e9ec; --mute:#9aa0ac; --rule:#2b303a;
+  --accent:#e08b98; --accent-soft:#2c1e22; --field:#151920;
+  --ok:#74cc9b; --ok-bg:#16291f; --mid:#f0c060; --mid-bg:#2e2512; --hi:#ff8f86; --hi-bg:#361a18; --na:#a0a6b2; --na-bg:#232831;
+  --z-ok:#2f6a49; --z-mid:#7a5a1c; --z-hi:#7d3330; --z-na:#3a404b;
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#12151b; --surface:#1a1e26; --ink:#e8e9ec; --mute:#9aa0ac; --rule:#2b303a;
+  --accent:#e08b98; --accent-soft:#2c1e22; --field:#151920;
+  --ok:#74cc9b; --ok-bg:#16291f; --mid:#f0c060; --mid-bg:#2e2512; --hi:#ff8f86; --hi-bg:#361a18; --na:#a0a6b2; --na-bg:#232831;
+  --z-ok:#2f6a49; --z-mid:#7a5a1c; --z-hi:#7d3330; --z-na:#3a404b;
+  --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.top{background:var(--surface);border-bottom:1px solid var(--rule)}
+.top-in{max-width:1240px;margin:0 auto;padding:18px 20px 0;display:flex;flex-direction:column;gap:14px}
+.brand{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand h1{font-size:26px;font-weight:700;letter-spacing:-.01em;line-height:1.15}
+.brand h1 span{color:var(--accent)}
+.brand p{margin:4px 0 0;color:var(--mute);font-size:13.5px}
+.scorelist{display:flex;gap:6px;flex-wrap:wrap}
+.scorelist span{font:600 11.5px/1 var(--f-mono);padding:5px 7px;border:1px solid var(--rule);border-radius:4px;color:var(--mute)}
+nav.tabs{display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{font:600 14px var(--f-display);letter-spacing:.02em;background:none;border:0;border-bottom:3px solid transparent;color:var(--mute);padding:10px 14px;cursor:pointer;white-space:nowrap}
+nav.tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button:hover{color:var(--ink)}
+
+.wrap{max-width:1240px;margin:0 auto;padding:20px}
+.layout{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:20px;align-items:start}
+@media (max-width:880px){.layout{grid-template-columns:1fr}.wrap{padding:16px}}
+
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:10px;box-shadow:var(--shadow)}
+.inputs{position:sticky;top:12px;padding:16px}
+@media (max-width:880px){.inputs{position:static}}
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px}
+.sec-h h2{font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--mute)}
+.block+.block{margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12.5px;font-weight:500;color:var(--ink)}
+.box{display:flex;align-items:stretch;border:1px solid var(--rule);border-radius:7px;background:var(--field);overflow:hidden;transition:border-color .15s}
+.box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.box input,.box select{flex:1;min-width:0;border:0;background:transparent;color:var(--ink);font:500 16px var(--f-mono);padding:8px 10px;outline:none}
+.box select{font:500 15px var(--f-body);padding:8px 6px}
+.box .unit{display:flex;align-items:center;padding:0 9px;font:500 11.5px var(--f-mono);color:var(--mute);border-left:1px solid var(--rule);background:var(--surface);white-space:nowrap}
+.hint{font-size:11.5px;color:var(--mute)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden;background:var(--field)}
+.seg button{border:0;background:transparent;color:var(--mute);font:500 12.5px var(--f-body);padding:6px 10px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button.on{background:var(--ink);color:var(--surface)}
+.units{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.units .r{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--mute)}
+.actions{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{font:600 13.5px var(--f-body);padding:9px 14px;border-radius:7px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:var(--surface)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn.ghost:hover{border-color:var(--ink)}
+a.btn{text-decoration:none;display:inline-block}
+
+.results{display:flex;flex-direction:column;gap:20px;min-width:0}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:560px){.summary{grid-template-columns:1fr}}
+.sum{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sum h3{font-size:15px;font-weight:600}
+.tally{display:flex;gap:8px;flex-wrap:wrap}
+.tally span{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;padding:4px 9px;border-radius:999px}
+.tally b{font:600 13px var(--f-mono)}
+.verdict{font-size:13.5px;color:var(--mute);margin:0}
+.verdict strong{color:var(--ink);font-weight:600}
+
+.grp-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 2px 10px}
+.grp-h h2{font-size:18px;font-weight:600}
+.grp-h span{font-size:12.5px;color:var(--mute)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{position:relative;padding:14px 16px 14px 19px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--z-na)}
+.card.s-ok::before{background:var(--ok)}.card.s-mid::before{background:var(--mid)}.card.s-hi::before{background:var(--hi)}
+.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-h h3{font-size:16px;font-weight:600;line-height:1.25}
+.card-h .sub{display:block;font:400 12px var(--f-body);color:var(--mute);margin-top:2px}
+.val{font:600 28px/1 var(--f-mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap}
+.val.empty{color:var(--z-na)}
+.pill{align-self:flex-start;display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:4px 10px;border-radius:999px}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.p-ok{background:var(--ok-bg);color:var(--ok)}.p-mid{background:var(--mid-bg);color:var(--mid)}.p-hi{background:var(--hi-bg);color:var(--hi)}.p-na{background:var(--na-bg);color:var(--na)}
+
+.scale{position:relative;padding-top:8px}
+.bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--z-na)}
+.bar i{display:block;height:100%}
+.z-ok{background:var(--z-ok)}.z-mid{background:var(--z-mid)}.z-hi{background:var(--z-hi)}.z-na{background:var(--z-na)}
+.mark{position:absolute;top:0;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--surface);border:3px solid var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.25);top:5px}
+.ticks{position:relative;height:16px;margin-top:3px;font:500 10.5px var(--f-mono);color:var(--mute)}
+.ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.ticks span.l{transform:none}.ticks span.r{transform:translateX(-100%)}
+
+details{font-size:12.5px;color:var(--mute);border-top:1px dashed var(--rule);padding-top:8px}
+details summary{cursor:pointer;color:var(--ink);font-weight:500;list-style:none}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"+ ";font-family:var(--f-mono);color:var(--accent)}
+details[open] summary::before{content:"− "}
+details p{margin:6px 0 0}
+code{font:500 12px var(--f-mono);background:var(--field);border:1px solid var(--rule);padding:1px 5px;border-radius:4px}
+.miss{font-size:12.5px;color:var(--mute)}
+
+.note{display:flex;gap:12px;padding:14px 16px;border-left:4px solid var(--mid);background:var(--mid-bg);border-radius:8px;font-size:13.5px;line-height:1.55}
+.note strong{display:block;margin-bottom:2px;color:var(--ink)}
+
+.doc{padding:20px;max-width:900px}
+.doc h2{font-size:20px;margin-bottom:6px}
+.doc p{max-width:68ch;color:var(--mute);margin:6px 0}
+.doc+.doc{margin-top:16px}
+.tblwrap{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+th{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.extgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+@media (max-width:420px){.extgrid{grid-template-columns:1fr}}
+.extin{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:14px}
+.extin .field{flex:1;min-width:180px}
+ol.refs{font-size:13px;color:var(--mute);padding-left:22px;margin:10px 0 0;max-width:90ch}
+ol.refs li{margin-bottom:6px}
+.hide{display:none!important}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+footer{max-width:1240px;margin:0 auto;padding:4px 20px 28px;font-size:12px;color:var(--mute)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <div>
+        <h1>Hepatik <span>steatoz</span> ve <span>fibrozis</span> skorları</h1>
+        <p>Rutin laboratuvardan noninvaziv değerlendirme · yayımlanmış eşiklerle yorum</p>
+      </div>
+      <div class="scorelist" aria-label="Kapsanan skorlar"><span>FIB-4</span><span>FIB-5</span><span>FIB-6</span><span>FIB-8</span><span>FIB-9</span><span>APRI</span><span>NFS</span><span>HSI</span><span>FLI</span><span>TyG</span></div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="on" data-tab="calc" id="t-calc">Hesaplayıcı</button>
+      <button data-tab="ext" id="t-ext">FIB-6 ve FIB-9</button>
+      <button data-tab="info" id="t-info">Formüller ve kaynaklar</button>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+<div id="tab-calc" class="layout">
+  <aside class="panel inputs" aria-label="Hasta verileri">
+    <div class="block">
+      <div class="sec-h"><h2>Hasta</h2>
+        <div class="seg" id="etio" title="FIB-4 eşikleri"><button class="on" data-v="masld">MASLD</button><button data-v="viral">Viral</button></div></div>
+      <div class="fields">
+        <div class="field"><label for="age">Yaş</label><div class="box"><input type="text" id="age" inputmode="decimal"><span class="unit">yıl</span></div></div>
+        <div class="field"><label for="sex">Cinsiyet</label><div class="box"><select id="sex"><option value="">Seçiniz</option><option value="m">Erkek</option><option value="f">Kadın</option></select></div></div>
+        <div class="field"><label for="height">Boy</label><div class="box"><input type="text" id="height" inputmode="decimal"><span class="unit">cm</span></div></div>
+        <div class="field"><label for="weight">Kilo</label><div class="box"><input type="text" id="weight" inputmode="decimal"><span class="unit">kg</span></div></div>
+        <div class="field"><label for="bmi">BMI</label><div class="box"><input type="text" id="bmi" inputmode="decimal"><span class="unit">kg/m²</span></div></div>
+        <div class="field"><label for="waist">Bel çevresi</label><div class="box"><input type="text" id="waist" inputmode="decimal"><span class="unit">cm</span></div></div>
+        <div class="field" style="grid-column:1/-1"><label for="dm">Diyabet ya da bozulmuş açlık glukozu</label><div class="box"><select id="dm"><option value="">Seçiniz</option><option value="1">Var</option><option value="0">Yok</option></select></div></div>
+      </div>
+      <p class="hint" style="margin:8px 0 0">BMI boy ve kilodan otomatik hesaplanır; elle de girilebilir.</p>
+    </div>
+    <div class="block">
+      <div class="sec-h"><h2>Laboratuvar</h2></div>
+      <div class="fields">
+        <div class="field"><label for="ast">AST</label><div class="box"><input type="text" id="ast" inputmode="decimal"><span class="unit">U/L</span></div></div>
+        <div class="field"><label for="astuln">AST ÜSN</label><div class="box"><input type="text" id="astuln" inputmode="decimal" value="40"><span class="unit">U/L</span></div></div>
+        <div class="field"><label for="alt">ALT</label><div class="box"><input type="text" id="alt" inputmode="decimal"><span class="unit">U/L</span></div></div>
+        <div class="field"><label for="plt">Trombosit</label><div class="box"><input type="text" id="plt" inputmode="decimal"><span class="unit">×10⁹/L</span></div></div>
+        <div class="field"><label for="alb">Albümin</label><div class="box"><input type="text" id="alb" inputmode="decimal"><span class="unit" id="albu">g/dL</span></div></div>
+        <div class="field"><label for="tp">Total protein</label><div class="box"><input type="text" id="tp" inputmode="decimal"><span class="unit" id="tpu">g/dL</span></div></div>
+        <div class="field"><label for="ggt">GGT</label><div class="box"><input type="text" id="ggt" inputmode="decimal"><span class="unit">U/L</span></div></div>
+        <div class="field"><label for="alp">ALP</label><div class="box"><input type="text" id="alp" inputmode="decimal"><span class="unit">U/L</span></div></div>
+        <div class="field"><label for="tg">Trigliserid</label><div class="box"><input type="text" id="tg" inputmode="decimal"><span class="unit" id="tgu">mg/dL</span></div></div>
+        <div class="field"><label for="glc">Açlık glukozu</label><div class="box"><input type="text" id="glc" inputmode="decimal"><span class="unit" id="glu">mg/dL</span></div></div>
+      </div>
+      <div class="units">
+        <div class="r">Albümin, total protein<div class="seg" id="u-alb"><button class="on" data-v="gdl">g/dL</button><button data-v="gl">g/L</button></div></div>
+        <div class="r">Trigliserid, glukoz<div class="seg" id="u-lip"><button class="on" data-v="mg">mg/dL</button><button data-v="mmol">mmol/L</button></div></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="copy">Sonuçları kopyala</button>
+      <button class="btn ghost" id="example">Örnek hasta</button>
+      <button class="btn ghost" id="reset">Temizle</button>
+    </div>
+  </aside>
+
+  <section class="results" aria-live="polite">
+    <div class="summary">
+      <div class="panel sum"><h3>Fibrozis</h3><div class="tally" id="tally-fib"></div><p class="verdict" id="verd-fib"></p></div>
+      <div class="panel sum"><h3>Steatoz</h3><div class="tally" id="tally-ste"></div><p class="verdict" id="verd-ste"></p></div>
+    </div>
+    <div>
+      <div class="grp-h"><h2>Fibrozis skorları</h2><span id="ctx-fib"></span></div>
+      <div class="cards" id="res-fib"></div>
+    </div>
+    <div>
+      <div class="grp-h"><h2>Steatoz skorları</h2><span>MASLD taraması</span></div>
+      <div class="cards" id="res-ste"></div>
+    </div>
+    <div class="note"><div><strong>KBH ve diyaliz hastalarında yorum</strong>Bu skorların hiçbiri KBH ya da diyaliz popülasyonunda geliştirilmedi. Üremik ortamda aminotransferazlar, özellikle hemodiyalizde, düşük seyreder ve FIB-4 ile APRI'yi yapay olarak düşürür. KBH-MKB'ye bağlı ALP yüksekliği FIB-5 ve FIB-6'yı; inflamasyon ve malnütrisyona bağlı hipoalbüminemi FIB-5, NFS ve FIB-8'i etkiler. Üremik trombositopeni de sonucu kaydırabilir. Belirsiz ya da yüksek sonuçlar elastografiyle (VCTE/SWE) doğrulanmalıdır.</div></div>
+  </section>
+</div>
+
+<div id="tab-ext" class="hide">
+  <div class="extgrid">
+    <section class="panel doc">
+      <h2>FIB-6</h2>
+      <p>Shiha ve ark., 2022. Yaş, AST/ÜSN, ALT/ÜSN, ALP/ÜSN, albümin (g/dL) ve trombositten oluşan bir random forest modelidir. Açık formülü yayımlanmadığından burada hesaplanamaz. Resmi hesaplayıcının verdiği değeri girin; yayımlanmış üç eşikle yorumlanır. Yüksek değer daha ileri fibrozisi gösterir.</p>
+      <div class="extin">
+        <div class="field"><label for="fib6">Resmi hesaplayıcının verdiği FIB-6 değeri</label><div class="box"><input type="text" id="fib6" inputmode="decimal" placeholder="ör. 1,85"></div></div>
+        <a class="btn ghost" href="http://fib6.elriah.info" target="_blank" rel="noopener">Resmi hesaplayıcı ↗</a>
+      </div>
+      <div class="tblwrap"><table id="fib6tbl">
+        <thead><tr><th>Hedef</th><th>Dışlama</th><th>Optimal</th><th>Doğrulama</th></tr></thead>
+        <tbody></tbody></table></div>
+      <p class="hint" style="margin-top:10px">Eşikler KHC türetme kohortundan alınmıştır; MAFLD ve KHB kohortlarında özellikle dışlama amacıyla doğrulanmıştır.</p>
+    </section>
+    <section class="panel doc">
+      <h2>FIB-9</h2>
+      <p>Calès ve ark., 2025. AST, ALT, GGT, ALP, bilirubin, albümin, trombosit, protrombin indeksi ya da INR ve üre; yaş, kilo, boy ve diyabetle düzeltilir. Yapay zekâ türevli modelin katsayıları açık değildir. Üre girilmezse aynı hesaplayıcı cinsiyeti kullanarak bir "FIB-8" verir; bu, Sripongpun'un FIB-8 skorundan farklıdır.</p>
+      <div class="extin">
+        <div class="field"><label for="fib9">Resmi hesaplayıcının verdiği FIB-9 değeri</label><div class="box"><input type="text" id="fib9" inputmode="decimal" placeholder="ör. 2,10"></div></div>
+        <a class="btn ghost" href="https://gilles-hunault.leria-info.univ-angers.fr/wstat/FIB-9-calculator.php" target="_blank" rel="noopener">Resmi hesaplayıcı ↗</a>
+      </div>
+      <div id="fib9out" style="margin-top:14px"></div>
+      <p class="hint" style="margin-top:10px">Geliştiricilere göre 1,5 ile 2,5 arası Kleiner F2'ye, 2,5 civarı F2'den F3'e geçişe karşılık gelir. Yaş ≥80, AST ≥300 (ALT ≥400) ya da ALP ≤35 U/L olduğunda doğruluk belirgin düşer. Dış doğrulama sınırlıdır.</p>
+    </section>
+  </div>
+</div>
+
+<div id="tab-info" class="hide">
+  <section class="panel doc" style="max-width:none">
+    <h2>Formüller ve eşikler</h2>
+    <p>Trombosit ×10⁹/L olarak girilir (ör. 210). A/G oranı = albümin / (total protein − albümin).</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Skor</th><th>Formül</th><th>Eşikler</th></tr></thead>
+      <tbody>
+      <tr><td>FIB-4</td><td><code>(yaş × AST) / (PLT × √ALT)</code></td><td>MASLD: &lt;1,30 düşük, &gt;2,67 yüksek; ≥65 yaşta alt eşik 2,0. Viral: &lt;1,45 / &gt;3,25</td></tr>
+      <tr><td>APRI</td><td><code>(AST/ÜSN) / PLT × 100</code></td><td>Anlamlı fibrozis &lt;0,5 / &gt;1,5; siroz &lt;1,0 / &gt;2,0</td></tr>
+      <tr><td>AAR</td><td><code>AST / ALT</code></td><td>&gt;1 siroz lehine; tek başına zayıf</td></tr>
+      <tr><td>NFS</td><td><code>−1,675 + 0,037×yaş + 0,094×BMI + 1,13×BAG/DM + 0,99×AAR − 0,013×PLT − 0,66×Alb</code></td><td>&lt;−1,455 düşük (≥65 yaşta 0,12); &gt;0,676 yüksek</td></tr>
+      <tr><td>FIB-5</td><td><code>(Alb[g/L]×0,3 + PLT×0,05) − (ALP×0,014 + AAR×6 + 14)</code></td><td>Düşük değer ileri fibrozis lehine; ≥0 F0–F2 olası, &lt;−2,1 F3–F4 olası (KHC)</td></tr>
+      <tr><td>FIB-8</td><td><code>FIB-4 + 0,025×BMI − 0,702×A/G + 0,004×GGT + 0,858×DM</code></td><td>≥F2 için &lt;0,88 düşük, &gt;1,77 yüksek</td></tr>
+      <tr><td>HSI</td><td><code>8×(ALT/AST) + BMI (+2 kadın, +2 DM)</code></td><td>&lt;30 steatoz dışlanır; &gt;36 olası</td></tr>
+      <tr><td>FLI</td><td><code>e^y/(1+e^y)×100; y = 0,953×ln(TG) + 0,139×BMI + 0,718×ln(GGT) + 0,053×bel − 15,745</code></td><td>&lt;30 dışlanır; ≥60 olası</td></tr>
+      <tr><td>TyG</td><td><code>ln(TG × glukoz / 2)</code>, mg/dL</td><td>İnsülin direnci belirteci; evrensel steatoz eşiği yok</td></tr>
+      </tbody></table></div>
+  </section>
+  <section class="panel doc" style="max-width:none">
+    <h2>Kaynaklar</h2>
+    <ol class="refs">
+    <li>Sterling RK, Lissen E, Clumeck N, et al. Development of a simple noninvasive index to predict significant fibrosis in patients with HIV/HCV coinfection. Hepatology. 2006;43:1317–25. doi:10.1002/hep.21178</li>
+    <li>Shah AG, Lydecker A, Murray K, et al. Comparison of noninvasive markers of fibrosis in patients with nonalcoholic fatty liver disease. Clin Gastroenterol Hepatol. 2009;7:1104–12.</li>
+    <li>McPherson S, Hardy T, Dufour JF, et al. Age as a confounding factor for the accurate non-invasive diagnosis of advanced NAFLD fibrosis. Am J Gastroenterol. 2017;112:740–51.</li>
+    <li>Wai CT, Greenson JK, Fontana RJ, et al. A simple noninvasive index can predict both significant fibrosis and cirrhosis in patients with chronic hepatitis C. Hepatology. 2003;38:518–26.</li>
+    <li>Angulo P, Hui JM, Marchesini G, et al. The NAFLD fibrosis score: a noninvasive system that identifies liver fibrosis in patients with NAFLD. Hepatology. 2007;45:846–54.</li>
+    <li>Attallah AM, Shiha GE, Omran MM, et al. A discriminant score based on routine laboratory blood tests for accurate diagnosis of severe fibrosis and/or liver cirrhosis in Egyptian patients with chronic hepatitis C. Hepatol Res. 2006;34:163–9.</li>
+    <li>Shiha G, Samir W, Seif S, et al. A simple bedside blood test (Fibrofast; FIB-5) is superior to FIB-4 index for the differentiation between non-severe and severe fibrosis in patients with chronic hepatitis C. Menoufia J Viral Hepat. 2016;1(2):13–22.</li>
+    <li>Metwally K, Elsabaawy M, Abdel-Samiee M, et al. FIB-5 versus FIB-4 index for assessment of hepatic fibrosis in chronic hepatitis B affected patients. Clin Exp Hepatol. 2020;6:335–8. doi:10.5114/ceh.2020.102157</li>
+    <li>Shiha G, Soliman R, Mikhail NNH, et al. Development and multicenter validation of FIB-6. Hepatol Res. 2022;52:165–75. doi:10.1111/hepr.13729</li>
+    <li>Anushiravani A, Alswat K, Dalekos GN, et al. Multicenter validation of FIB-6 in biopsy-proven MAFLD. Eur J Gastroenterol Hepatol. 2023;35:1284–8. doi:10.1097/MEG.0000000000002641. PMID: 37695595</li>
+    <li>Alswat K, Soliman R, Mikhail NNH, et al. Validation of FIB-6 score in chronic hepatitis B. Saudi J Gastroenterol. 2024;30:138–44. doi:10.4103/sjg.sjg_27_24. PMID: 38482630</li>
+    <li>Prasoppokakorn T, Chan WK, Wong VW, et al. Validation model of fibrosis-8 index score to predict significant fibrosis among patients with NAFLD. World J Gastroenterol. 2022;28:1563–73. doi:10.3748/wjg.v28.i15.1563. PMID: 35582126</li>
+    <li>Calès P, Canivet CM, Costentin C, et al. A new generation of non-invasive tests of liver fibrosis with improved accuracy in MASLD. J Hepatol. 2025. doi:10.1016/j.jhep.2024.11.049</li>
+    <li>Lee JH, Kim D, Kim HJ, et al. Hepatic steatosis index: a simple screening tool reflecting NAFLD. Dig Liver Dis. 2010;42:503–8.</li>
+    <li>Bedogni G, Bellentani S, Miglioli L, et al. The Fatty Liver Index: a simple and accurate predictor of hepatic steatosis in the general population. BMC Gastroenterol. 2006;6:33.</li>
+    <li>Simental-Mendía LE, Rodríguez-Morán M, Guerrero-Romero F. The product of fasting glucose and triglycerides as surrogate for identifying insulin resistance in apparently healthy subjects. Metab Syndr Relat Disord. 2008;6:299–304.</li>
+    </ol>
+  </section>
+</div>
+</div>
+<footer>Klinik karar desteği içindir; skorlar tek başına tanı koydurmaz.</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const F=['age','sex','height','weight','bmi','waist','dm','ast','astuln','alt','plt','alb','tp','ggt','alp','tg','glc'];
+let etio='masld',ualb='gdl',ulip='mg',bmiAuto=true;
+const S=[];
+
+function num(id){const v=String($(id).value||'').trim().replace(/\s/g,'');if(v==='')return null;const n=Number(v.replace(',','.'));return isFinite(n)?n:null}
+function fx(x,d){return x==null||!isFinite(x)?'—':x.toLocaleString('tr-TR',{minimumFractionDigits:d,maximumFractionDigits:d})}
+
+function seg(id,cb){$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);calc()})}
+seg('etio',v=>etio=v);
+seg('u-alb',v=>{ualb=v;$('albu').textContent=$('tpu').textContent=v==='gdl'?'g/dL':'g/L'});
+seg('u-lip',v=>{ulip=v;$('tgu').textContent=$('glu').textContent=v==='mg'?'mg/dL':'mmol/L'});
+
+document.querySelectorAll('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  ['calc','ext','info'].forEach(t=>$('tab-'+t).classList.toggle('hide',t!==b.dataset.tab));
+}));
+
+$('bmi').addEventListener('input',()=>{bmiAuto=$('bmi').value===''});
+['height','weight'].forEach(id=>$(id).addEventListener('input',()=>{
+  if(!bmiAuto)return;const h=num('height'),w=num('weight');
+  $('bmi').value=(h&&w)?(w/((h/100)**2)).toFixed(1).replace('.',','):'';
+}));
+F.forEach(id=>{$(id).addEventListener('input',calc);$(id).addEventListener('change',calc)});
+
+function get(){
+  const g={};F.forEach(id=>g[id]=(id==='sex'||id==='dm')?($(id).value||null):num(id));
+  if(g.dm!=null)g.dm=+g.dm;
+  if(ualb==='gl'){if(g.alb!=null)g.alb/=10;if(g.tp!=null)g.tp/=10}
+  if(ulip==='mmol'){if(g.tg!=null)g.tg*=88.57;if(g.glc!=null)g.glc*=18.016}
+  return g;
+}
+const LAB={age:'yaş',sex:'cinsiyet',bmi:'BMI',waist:'bel çevresi',dm:'diyabet',ast:'AST',astuln:'AST ÜSN',alt:'ALT',plt:'trombosit',alb:'albümin',tp:'total protein',ggt:'GGT',alp:'ALP',tg:'trigliserid',glc:'glukoz'};
+function need(g,keys){return keys.filter(k=>g[k]==null||(k!=='dm'&&k!=='sex'&&g[k]<=0)).map(k=>LAB[k])}
+// zones: [[üst sınır, renk], ...] sırayla; son eleman max'a kadar
+function Z(min,max,cuts,cols){return {min,max,cuts,cols}}
+
+function calc(){
+  const g=get();const fib=[],ste=[];
+  {const m=need(g,['age','ast','alt','plt']);let v=null,c=null,n,sc;
+   if(etio==='viral'){sc=Z(0,6,[1.45,3.25],['ok','mid','hi']);n='Sterling eşikleri (<1,45 / >3,25)'}
+   else{const lo=(g.age!=null&&g.age>=65)?2.0:1.30;sc=Z(0,5,[lo,2.67],['ok','mid','hi']);n=lo===2?'≥65 yaş: alt eşik 2,0':'Eşikler <1,30 / >2,67'+((g.age!=null&&g.age<35)?'; <35 yaşta doğruluk düşüktür':'')}
+   if(!m.length){v=g.age*g.ast/(g.plt*Math.sqrt(g.alt));
+    c=v<sc.cuts[0]?['ok',etio==='viral'?'Anlamlı fibrozis olasılığı düşük':'İleri fibrozis olasılığı düşük']:v>sc.cuts[1]?['hi','İleri fibrozis olasılığı yüksek']:['mid','Belirsiz bölge · elastografi önerilir']}
+   fib.push({k:'FIB-4',sub:'Yaş, AST, ALT, trombosit',v,d:2,c,m,n,sc,f:'(yaş × AST) / (PLT × √ALT)'})}
+  {const m=need(g,['ast','astuln','plt']);let v=null,c=null;
+   if(!m.length){v=(g.ast/g.astuln)/g.plt*100;
+    c=v>2.0?['hi','Siroz olasılığı yüksek']:v>1.5?['hi','Anlamlı fibrozis olasılığı yüksek']:v<0.5?['ok','Anlamlı fibrozis olasılığı düşük']:['mid','Belirsiz bölge']}
+   fib.push({k:'APRI',sub:'AST/ÜSN ve trombosit',v,d:2,c,m,n:'F2 için <0,5 / >1,5; siroz için <1,0 / >2,0',sc:Z(0,3,[0.5,1.5,2.0],['ok','mid','hi','hi']),f:'(AST/ÜSN) / PLT × 100'})}
+  {const m=need(g,['age','bmi','dm','ast','alt','plt','alb']);let v=null,c=null,n='Albümin g/dL üzerinden';
+   const lo=(g.age!=null&&g.age>=65)?0.12:-1.455;
+   if(!m.length){v=-1.675+0.037*g.age+0.094*g.bmi+1.13*g.dm+0.99*(g.ast/g.alt)-0.013*g.plt-0.66*g.alb;
+    c=v<lo?['ok','İleri fibrozis olasılığı düşük']:v>0.676?['hi','İleri fibrozis olasılığı yüksek']:['mid','Belirsiz bölge']}
+   if(lo===0.12)n='≥65 yaş: alt eşik 0,12';if(g.bmi>=40)n+='; morbid obezitede doğruluk düşer';
+   fib.push({k:'NAFLD fibrozis skoru',sub:'NFS · Angulo 2007',v,d:3,c,m,n,sc:Z(-4,3,[lo,0.676],['ok','mid','hi']),f:'−1,675 + 0,037×yaş + 0,094×BMI + 1,13×BAG/DM + 0,99×AAR − 0,013×PLT − 0,66×Alb'})}
+  {const m=need(g,['age','ast','alt','plt','bmi','alb','tp','ggt','dm']);let v=null,c=null,n='MASLD\'de anlamlı fibrozis (≥F2)';
+   if(!m.length){const glob=g.tp-g.alb;if(glob>0){const ag=g.alb/glob;const f4=g.age*g.ast/(g.plt*Math.sqrt(g.alt));
+     v=f4+0.025*g.bmi-0.702*ag+0.004*g.ggt+0.858*g.dm;n+='; A/G = '+fx(ag,2);
+     c=v<0.88?['ok','Anlamlı fibrozis olasılığı düşük']:v>1.77?['hi','Anlamlı fibrozis olasılığı yüksek']:['mid','Belirsiz bölge']}else m.push('total protein albüminden büyük olmalı')}
+   fib.push({k:'FIB-8',sub:'Sripongpun · FIB-4 + BMI, A/G, GGT, DM',v,d:2,c,m,n,sc:Z(-1,5,[0.88,1.77],['ok','mid','hi']),f:'FIB-4 + 0,025×BMI − 0,702×A/G + 0,004×GGT + 0,858×DM'})}
+  {const m=need(g,['ast','alt','plt','alb','alp']);let v=null,c=null;
+   if(!m.length){v=(g.alb*10*0.3+g.plt*0.05)-(g.alp*0.014+(g.ast/g.alt)*6+14);
+    c=v<-2.1?['hi','Ciddi fibrozis (F3–F4) olasılığı yüksek']:v>=0?['ok','Ciddi fibrozis olasılığı düşük']:['mid','Belirsiz bölge']}
+   fib.push({k:'FIB-5',sub:'Fibrofast · düşük değer = ileri fibrozis',v,d:2,c,m,n:'Eşikler KHC kohortlarından; MASLD ve KHB\'de farklı eşikler bildirilmiştir',sc:Z(-8,6,[-2.1,0],['hi','mid','ok']),f:'(Alb[g/L]×0,3 + PLT×0,05) − (ALP×0,014 + AAR×6 + 14)'})}
+  {const m=need(g,['ast','alt']);let v=null,c=null;
+   if(!m.length){v=g.ast/g.alt;c=v>1?['mid','>1 · siroz lehine olabilir']:['ok','≤1']}
+   fib.push({k:'AST/ALT oranı',sub:'AAR · De Ritis',v,d:2,c,m,n:'Tek başına zayıf; alkol ve kas kaynaklı AST yüksekliğinde yanıltıcı',sc:Z(0,2.5,[1],['ok','mid']),f:'AST / ALT'})}
+  {const m=need(g,['ast','alt','bmi','sex','dm']);let v=null,c=null;
+   if(!m.length){v=8*(g.alt/g.ast)+g.bmi+(g.sex==='f'?2:0)+(g.dm?2:0);
+    c=v<30?['ok','Steatoz dışlanabilir']:v>36?['hi','Steatoz olası']:['mid','Belirsiz bölge']}
+   ste.push({k:'Hepatik steatoz indeksi',sub:'HSI · Lee 2010',v,d:1,c,m,n:'Eşikler <30 / >36',sc:Z(20,50,[30,36],['ok','mid','hi']),f:'8×(ALT/AST) + BMI (+2 kadın, +2 DM)'})}
+  {const m=need(g,['tg','bmi','ggt','waist']);let v=null,c=null;
+   if(!m.length){const y=0.953*Math.log(g.tg)+0.139*g.bmi+0.718*Math.log(g.ggt)+0.053*g.waist-15.745;v=Math.exp(y)/(1+Math.exp(y))*100;
+    c=v<30?['ok','Steatoz dışlanabilir']:v>=60?['hi','Steatoz olası']:['mid','Belirsiz bölge']}
+   ste.push({k:'Yağlı karaciğer indeksi',sub:'FLI · Bedogni 2006',v,d:1,c,m,n:'Eşikler <30 / ≥60',sc:Z(0,100,[30,60],['ok','mid','hi']),f:'e^y/(1+e^y)×100'})}
+  {const m=need(g,['tg','glc']);let v=null,c=null;
+   if(!m.length){v=Math.log(g.tg*g.glc/2);c=['na','Evrensel eşik yok']}
+   ste.push({k:'TyG indeksi',sub:'Trigliserid-glukoz',v,d:2,c,m,n:'İnsülin direnci belirteci; MASLD için bildirilen eşikler kohorta göre değişir',sc:Z(7,11,[],['na']),f:'ln(TG × glukoz / 2), mg/dL'})}
+
+  render('res-fib',fib);render('res-ste',ste);
+  summary('fib',fib);summary('ste',ste);
+  $('ctx-fib').textContent=etio==='viral'?'FIB-4 viral hepatit eşikleri':'FIB-4 MASLD eşikleri';
+  S.length=0;S.push(...fib,...ste);
+}
+function pos(sc,x){return Math.max(0,Math.min(100,(x-sc.min)/(sc.max-sc.min)*100))}
+function scale(o){
+  const sc=o.sc,pts=[sc.min,...sc.cuts,sc.max];let bar='';
+  for(let i=0;i<pts.length-1;i++){const w=pos(sc,pts[i+1])-pos(sc,pts[i]);if(w>0)bar+=`<i class="z-${sc.cols[Math.min(i,sc.cols.length-1)]}" style="width:${w}%"></i>`}
+  const tk=x=>x.toLocaleString('tr-TR',{maximumFractionDigits:3});
+  const ticks=[`<span class="l" style="left:0">${tk(sc.min)}</span>`,...sc.cuts.filter((c,i,a)=>a.indexOf(c)===i).map(c=>`<span style="left:${pos(sc,c)}%">${tk(c)}</span>`),`<span class="r" style="left:100%">${tk(sc.max)}</span>`].join('');
+  const has=o.v!=null&&isFinite(o.v);
+  return `<div class="scale"><div class="bar">${bar}</div>${has?`<div class="mark" style="left:${pos(sc,o.v)}%" aria-hidden="true"></div>`:''}<div class="ticks">${ticks}</div></div>`;
+}
+function render(id,arr){
+  $(id).innerHTML=arr.map(o=>{
+    const has=o.v!=null&&isFinite(o.v);const st=has&&o.c?o.c[0]:'na';
+    const pill=has&&o.c?`<span class="pill p-${o.c[0]}">${o.c[1]}</span>`:`<span class="miss">Gerekli: ${o.m.join(', ')}</span>`;
+    return `<article class="panel card s-${st}"><div class="card-h"><div><h3>${o.k}</h3><span class="sub">${o.sub}</span></div><div class="val${has?'':' empty'}">${has?fx(o.v,o.d):'—'}</div></div>
+    ${pill}${scale(o)}
+    <details><summary>Formül ve not</summary><p><code>${o.f}</code></p>${o.n?`<p>${o.n}</p>`:''}</details></article>`}).join('');
+}
+function summary(id,arr){
+  arr=arr.filter(o=>o.k!=='AST/ALT oranı');
+  const done=arr.filter(o=>o.v!=null&&isFinite(o.v)&&o.c&&o.c[0]!=='na');
+  const cnt={ok:0,mid:0,hi:0};done.forEach(o=>cnt[o.c[0]]++);
+  $('tally-'+id).innerHTML=[['ok','Düşük'],['mid','Belirsiz'],['hi','Yüksek']].map(([k,t])=>`<span class="p-${k}"><b>${cnt[k]}</b>${t}</span>`).join('')+`<span class="p-na"><b>${arr.length-done.length}</b>Hesaplanamadı</span>`;
+  let v;
+  if(!done.length)v='Skor hesaplamak için soldaki verileri girin.';
+  else if(cnt.hi&&!cnt.ok)v=`<strong>${id==='fib'?'İleri fibrozis':'Steatoz'} lehine tutarlı bulgu.</strong> ${id==='fib'?'Elastografi ve hepatoloji değerlendirmesi düşünülmeli.':'Görüntülemeyle doğrulanabilir.'}`;
+  else if(cnt.ok&&!cnt.hi&&!cnt.mid)v=`<strong>${id==='fib'?'İleri fibrozis':'Steatoz'} için düşük risk.</strong> Skorlar birbiriyle uyumlu.`;
+  else if(cnt.hi&&cnt.ok)v='<strong>Skorlar uyumsuz.</strong> Girdileri ve etiyolojiye uygun eşikleri kontrol edin; elastografi belirleyicidir.';
+  else v='<strong>Belirsiz bölgede sonuç var.</strong> İkinci basamak test (VCTE/SWE) önerilir.';
+  $('verd-'+id).innerHTML=v;
+}
+function ext(id,fn){$(id).addEventListener('input',fn)}
+const T6=[['Siroz (F4)',1.7017,2.3159,3.1718],['cACLD (F3–F4)',1.5023,1.8992,2.7656],['Anlamlı fibrozis (F2–F4)',1.0722,1.7720,2.6284]];
+function f6(){const v=num('fib6');const P=(t,c)=>`<span class="pill p-${c}">${t}</span>`;
+  $('fib6tbl').querySelector('tbody').innerHTML=T6.map(([n,lo,op,hi])=>`<tr><td>${n}</td>
+   <td><div class="num" style="font-family:var(--f-mono);font-size:12px;color:var(--mute);margin-bottom:4px">${fx(lo,4)}</div>${v==null?'':(v<lo?P('Dışlanır','ok'):P('Dışlanamaz','mid'))}</td>
+   <td><div style="font-family:var(--f-mono);font-size:12px;color:var(--mute);margin-bottom:4px">${fx(op,4)}</div>${v==null?'':(v>=op?P('Pozitif','hi'):P('Negatif','ok'))}</td>
+   <td><div style="font-family:var(--f-mono);font-size:12px;color:var(--mute);margin-bottom:4px">${fx(hi,4)}</div>${v==null?'':(v>=hi?P('Doğrulanır','hi'):P('Doğrulanamaz','na'))}</td></tr>`).join('')}
+ext('fib6',f6);f6();
+ext('fib9',()=>{const v=num('fib9');if(v==null){$('fib9out').innerHTML='';return}
+  const c=v<=1.5?['ok','F0–F1 ile uyumlu']:v<2.5?['mid','F2 ile uyumlu']:['hi','F3 ve üzeri lehine (≈2,5 F2→F3 geçişi)'];
+  $('fib9out').innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="val">${fx(v,2)}</span><span class="pill p-${c[0]}">${c[1]}</span></div>`+scale({v,sc:Z(0,4,[1.5,2.5],['ok','mid','hi'])})});
+
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1600)}
+$('copy').addEventListener('click',async()=>{
+  const lines=S.filter(o=>o.v!=null&&isFinite(o.v)).map(o=>`${o.k}: ${fx(o.v,o.d)}${o.c?' ('+o.c[1]+')':''}`);
+  const a=num('fib6'),b=num('fib9');if(a!=null)lines.push('FIB-6 (resmi hesaplayıcı): '+fx(a,4));if(b!=null)lines.push('FIB-9 (resmi hesaplayıcı): '+fx(b,3));
+  if(!lines.length){toast('Hesaplanmış skor yok');return}
+  try{await navigator.clipboard.writeText(lines.join('\n'));toast('Kopyalandı')}catch(e){toast('Kopyalama tarayıcı tarafından engellendi')}
+});
+$('reset').addEventListener('click',()=>{F.forEach(id=>{$(id).value=''});$('astuln').value=40;bmiAuto=true;calc()});
+function example(){
+  if(ualb!=='gdl')$('u-alb').children[0].click();if(ulip!=='mg')$('u-lip').children[0].click();
+  const ex={age:58,sex:'m',height:172,weight:92,waist:104,dm:'1',ast:48,astuln:40,alt:52,plt:165,alb:'4,1',tp:'7,3',ggt:78,alp:95,tg:210,glc:132};
+  Object.entries(ex).forEach(([k,v])=>$(k).value=v);bmiAuto=true;$('bmi').value=(92/(1.72**2)).toFixed(1).replace('.',',');calc()}
+$('example').addEventListener('click',example);
+example();
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})})}</script>
+</body>
+</html>
