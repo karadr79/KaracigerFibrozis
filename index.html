@@ -147,8 +147,8 @@ table{border-collapse:collapse;width:100%;font-size:13px}
 th,td{padding:8px 10px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
 th{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
 td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-.extgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
-@media (max-width:420px){.extgrid{grid-template-columns:1fr}}
+.extgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:16px}
+@media (max-width:480px){.extgrid{grid-template-columns:1fr}}
 .extin{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-top:14px}
 .extin .field{flex:1;min-width:180px}
 ol.refs{font-size:13px;color:var(--mute);padding-left:22px;margin:10px 0 0;max-width:90ch}
@@ -172,7 +172,7 @@ footer{max-width:1240px;margin:0 auto;padding:4px 20px 28px;font-size:12px;color
     </div>
     <nav class="tabs" role="tablist">
       <button class="on" data-tab="calc" id="t-calc">Hesaplayıcı</button>
-      <button data-tab="ext" id="t-ext">FIB-6 ve FIB-9</button>
+      <button data-tab="ext" id="t-ext">FIB-5, 6 ve 9</button>
       <button data-tab="info" id="t-info">Formüller ve kaynaklar</button>
     </nav>
   </div>
@@ -240,6 +240,18 @@ footer{max-width:1240px;margin:0 auto;padding:4px 20px 28px;font-size:12px;color
 <div id="tab-ext" class="hide">
   <div class="extgrid">
     <section class="panel doc">
+      <h2>FIB-5 (Vutien ve ark., 2022)</h2>
+      <p>FIB-4'ün bileşenlerini (yaş, AST, ALT, trombosit) FibroScan karaciğer sertliğiyle birleştirir ve <b>3 yıllık portal hipertansiyon komplikasyonu (dekompansasyon) riskini</b> öngörür; fibrozis evrelemesi yapmaz. fib5.net'teki model XGBoost ile geliştirildiğinden formülü yayımlanmamıştır ve burada hesaplanamaz. Bu skor, hesaplayıcı sekmesindeki Fibrofast FIB-5'ten <b>farklıdır</b>.</p>
+      <p><b>Uygun hasta:</b> bilinen kronik karaciğer hastalığı, daha önce dekompansasyon yok (asit, özofagogastrik varis, hepatik ensefalopati), HCC yok, başlangıç MELD &lt;9.</p>
+      <p><b>Hesaplayıcıya girilecek değerler:</b> <span id="fib5in" style="font-family:var(--f-mono);font-size:13px;color:var(--ink)">yaş, AST, ALT, trombosit (×10³/µL), karaciğer sertliği (kPa)</span></p>
+      <div class="extin">
+        <div class="field"><label for="fib5v">FIB-5 skoru</label><div class="box"><input type="text" id="fib5v" inputmode="decimal" placeholder="siteden"></div></div>
+        <div class="field"><label for="fib5r">3 yıllık dekompansasyon riski</label><div class="box"><input type="text" id="fib5r" inputmode="decimal" placeholder="siteden"><span class="unit">%</span></div></div>
+        <a class="btn ghost" href="https://www.fib5.net/" target="_blank" rel="noopener">fib5.net ↗</a>
+      </div>
+      <p class="hint" style="margin-top:10px">Sitede eşik ve yorum tablosu yer almıyor; yorum için özgün makaleye bakın. Model, çoğunluğu erkek (%95,9) 5849 ABD gazisinden geliştirilmiş ve içsel olarak doğrulanmıştır; 3 yılda komplikasyon oranı %2,0'dır.</p>
+    </section>
+    <section class="panel doc">
       <h2>FIB-6</h2>
       <p>Shiha ve ark., 2022. Yaş, AST/ÜSN, ALT/ÜSN, ALP/ÜSN, albümin (g/dL) ve trombositten oluşan bir random forest modelidir. Açık formülü yayımlanmadığından burada hesaplanamaz. Resmi hesaplayıcının verdiği değeri girin; yayımlanmış üç eşikle yorumlanır. Yüksek değer daha ileri fibrozisi gösterir.</p>
       <div class="extin">
@@ -294,6 +306,7 @@ footer{max-width:1240px;margin:0 auto;padding:4px 20px 28px;font-size:12px;color
     <li>Shiha G, Samir W, Seif S, et al. A simple bedside blood test (Fibrofast; FIB-5) is superior to FIB-4 index for the differentiation between non-severe and severe fibrosis in patients with chronic hepatitis C. Menoufia J Viral Hepat. 2016;1(2):13–22.</li>
     <li>Metwally K, Elsabaawy M, Abdel-Samiee M, et al. FIB-5 versus FIB-4 index for assessment of hepatic fibrosis in chronic hepatitis B affected patients. Clin Exp Hepatol. 2020;6:335–8. doi:10.5114/ceh.2020.102157</li>
     <li>Shiha G, Soliman R, Mikhail NNH, et al. Development and multicenter validation of FIB-6. Hepatol Res. 2022;52:165–75. doi:10.1111/hepr.13729</li>
+    <li>Vutien P, Berry K, Feng Z, VoPham T, He Q, Green P, Ioannou G. Combining FIB-4 and liver stiffness into the FIB-5, a single model that accurately predicts complications of portal hypertension. Am J Gastroenterol. 2022;117:1999–2008. doi:10.14309/ajg.0000000000001906</li>
     <li>Anushiravani A, Alswat K, Dalekos GN, et al. Multicenter validation of FIB-6 in biopsy-proven MAFLD. Eur J Gastroenterol Hepatol. 2023;35:1284–8. doi:10.1097/MEG.0000000000002641. PMID: 37695595</li>
     <li>Alswat K, Soliman R, Mikhail NNH, et al. Validation of FIB-6 score in chronic hepatitis B. Saudi J Gastroenterol. 2024;30:138–44. doi:10.4103/sjg.sjg_27_24. PMID: 38482630</li>
     <li>Prasoppokakorn T, Chan WK, Wong VW, et al. Validation model of fibrosis-8 index score to predict significant fibrosis among patients with NAFLD. World J Gastroenterol. 2022;28:1563–73. doi:10.3748/wjg.v28.i15.1563. PMID: 35582126</li>
@@ -305,7 +318,7 @@ footer{max-width:1240px;margin:0 auto;padding:4px 20px 28px;font-size:12px;color
   </section>
 </div>
 </div>
-<footer>Klinik karar desteği içindir; skorlar tek başına tanı koydurmaz. · Sürüm 4</footer>
+<footer>Klinik karar desteği içindir; skorlar tek başına tanı koydurmaz. · Sürüm 5</footer>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -373,7 +386,7 @@ function calc(){
   {const m=need(g,['ast','alt','plt','alb','alp']);let v=null,c=null;
    if(!m.length){v=(g.alb*10*0.3+g.plt*0.05)-(g.alp*0.014+(g.ast/g.alt)*6+14);
     c=v<-2.1?['hi','Ciddi fibrozis (F3–F4) olasılığı yüksek']:v>=0?['ok','Ciddi fibrozis olasılığı düşük']:['mid','Belirsiz bölge']}
-   fib.push({k:'FIB-5',sub:'Fibrofast · düşük değer = ileri fibrozis',v,d:2,c,m,n:'Eşikler KHC kohortlarından; MASLD ve KHB\'de farklı eşikler bildirilmiştir',sc:Z(-8,6,[-2.1,0],['hi','mid','ok']),f:'(Alb[g/L]×0,3 + PLT×0,05) − (ALP×0,014 + AAR×6 + 14)'})}
+   fib.push({k:'FIB-5 (Fibrofast)',sub:'Attallah 2006 · düşük değer = ileri fibrozis',v,d:2,c,m,n:'Eşikler KHC kohortlarından; MASLD ve KHB\'de farklı eşikler bildirilmiştir. fib5.net\'teki FIB-5 (Vutien 2022) farklı bir skordur: FIB-5, 6 ve 9 sekmesine bakın',sc:Z(-8,6,[-2.1,0],['hi','mid','ok']),f:'(Alb[g/L]×0,3 + PLT×0,05) − (ALP×0,014 + AAR×6 + 14)'})}
   {const m=need(g,['ast','alt']);let v=null,c=null;
    if(!m.length){v=g.ast/g.alt;c=v>1?['mid','>1 · siroz lehine olabilir']:['ok','≤1']}
    fib.push({k:'AST/ALT oranı',sub:'AAR · De Ritis',v,d:2,c,m,n:'Tek başına zayıf; alkol ve kas kaynaklı AST yüksekliğinde yanıltıcı',sc:Z(0,2.5,[1],['ok','mid']),f:'AST / ALT'})}
@@ -392,6 +405,8 @@ function calc(){
   render('res-fib',fib);render('res-ste',ste);
   summary('fib',fib);summary('ste',ste);
   $('ctx-fib').textContent=etio==='viral'?'FIB-4 viral hepatit eşikleri':'FIB-4 MASLD eşikleri';
+  const q=[['yaş',g.age,0],['AST',g.ast,0],['ALT',g.alt,0],['trombosit',g.plt,0]].filter(x=>x[1]!=null).map(x=>x[0]+' '+fx(x[1],0));
+  $('fib5in').textContent=(q.length?q.join(' · ')+' · ':'')+'karaciğer sertliği (kPa)';
   S.length=0;S.push(...fib,...ste);
 }
 function pos(sc,x){return Math.max(0,Math.min(100,(x-sc.min)/(sc.max-sc.min)*100))}
@@ -439,7 +454,7 @@ ext('fib9',()=>{const v=num('fib9');if(v==null){$('fib9out').innerHTML='';return
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1600)}
 $('copy').addEventListener('click',async()=>{
   const lines=S.filter(o=>o.v!=null&&isFinite(o.v)).map(o=>`${o.k}: ${fx(o.v,o.d)}${o.c?' ('+o.c[1]+')':''}`);
-  const a=num('fib6'),b=num('fib9');if(a!=null)lines.push('FIB-6 (resmi hesaplayıcı): '+fx(a,4));if(b!=null)lines.push('FIB-9 (resmi hesaplayıcı): '+fx(b,3));
+  const a=num('fib6'),b=num('fib9');const c5=num('fib5v'),r5=num('fib5r');if(c5!=null)lines.push('FIB-5 (Vutien, fib5.net): '+fx(c5,2)+(r5!=null?' · 3 yıllık dekompansasyon riski %'+fx(r5,1):''));if(a!=null)lines.push('FIB-6 (resmi hesaplayıcı): '+fx(a,4));if(b!=null)lines.push('FIB-9 (resmi hesaplayıcı): '+fx(b,3));
   if(!lines.length){toast('Hesaplanmış skor yok');return}
   try{await navigator.clipboard.writeText(lines.join('\n'));toast('Kopyalandı')}catch(e){toast('Kopyalama tarayıcı tarafından engellendi')}
 });
